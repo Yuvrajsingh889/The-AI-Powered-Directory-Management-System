@@ -1,0 +1,221 @@
+/* Custom CSS for the AI Directory Manager application */
+
+/* Override default styles for dark theme consistency */
+body {
+    min-height: 100vh;
+    padding-bottom: 2rem;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e1e1e; 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #555; 
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #777; 
+}
+
+/* Custom card styling */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Feature cards */
+.feature-card {
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Directory path input styling */
+.directory-input {
+    border-radius: 0.375rem;
+    font-family: monospace;
+}
+
+/* File list table styles */
+.file-table {
+    font-size: 0.9rem;
+}
+
+.file-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+/* Animation for loading spinner */
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: -0.125em;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border .75s linear infinite;
+}
+
+/* Dashboard sections */
+.dashboard-section {
+    margin-bottom: 2rem;
+}
+
+/* Visualization container */
+.visualization-container {
+    height: 400px;
+    margin-bottom: 2rem;
+}
+
+/* Custom badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* Button hover effects */
+.btn {
+    transition: all 0.2s;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress bars */
+.progress {
+    height: 8px;
+    background-color: rgba(200, 200, 200, 0.2);
+}
+
+.progress-bar {
+    background-color: var(--bs-primary);
+}
+
+/* File info styles */
+.file-info {
+    font-size: 0.9rem;
+}
+
+.file-path {
+    font-family: monospace;
+    word-break: break-all;
+}
+
+/* Search form styling */
+.search-form .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.search-form .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Hero section */
+.hero-section {
+    padding: 5rem 0;
+    background: linear-gradient(135deg, #212529 0%, #343a40 100%);
+}
+
+.hero-title {
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+    font-weight: 300;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+/* Feature section */
+.features-section {
+    padding: 4rem 0;
+}
+
+/* Footer styling */
+.footer {
+    padding: 2rem 0;
+    margin-top: 3rem;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Stats card */
+.stat-card {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+/* Quick scan card */
+.quick-scan-card {
+    border-radius: 0.5rem;
+    border-left: 5px solid var(--bs-primary);
+}
+
+/* Utility classes */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 3rem 0;
+    }
+    
+    .visualization-container {
+        height: 300px;
+    }
+    
+    .feature-card {
+        margin-bottom: 1.5rem;
+    }
+}
