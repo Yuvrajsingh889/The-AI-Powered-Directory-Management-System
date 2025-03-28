@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="hero-title display-4">AI-Powered Directory Management</h1>
+                <p class="hero-subtitle lead">Intelligently organize, categorize, and visualize your files and directories with machine learning.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="/dashboard" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="fas fa-folder-open me-2"></i> Get Started
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary btn-lg px-4" data-bs-toggle="modal" data-bs-target="#infoModal">
+                        <i class="fas fa-info-circle me-2"></i> Learn More
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-lg-8 mx-auto">
+                <h2 class="mb-4">Powerful Features</h2>
+                <p class="lead">Our AI-powered directory management system provides intelligent tools to help you understand and organize your files.</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <!-- Feature 1 -->
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-primary">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <h5 class="card-title">AI Categorization</h5>
+                        <p class="card-text">Advanced machine learning algorithms automatically categorize your files based on content, extension, and naming patterns.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-info">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <h5 class="card-title">Visual Insights</h5>
+                        <p class="card-text">Interactive visualizations help you understand file distribution, size patterns, and directory structures at a glance.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-warning">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <h5 class="card-title">Intelligent Search</h5>
+                        <p class="card-text">Powerful search capabilities with filtering options to quickly find the files you need across complex directory structures.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-success">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
+                        <h5 class="card-title">Detailed Metadata</h5>
+                        <p class="card-text">Extract and display comprehensive file metadata including creation dates, permissions, MIME types, and more.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-danger">
+                            <i class="fas fa-project-diagram"></i>
+                        </div>
+                        <h5 class="card-title">Directory Structure Analysis</h5>
+                        <p class="card-text">Visualize and understand complex directory structures through interactive treemaps and hierarchy diagrams.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="col-md-4">
+                <div class="card feature-card h-100">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon text-secondary">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h5 class="card-title">Performance Optimized</h5>
+                        <p class="card-text">Efficiently scan and process large directories with minimal resource usage for lightning-fast results.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Start Section -->
+<section class="py-5 bg-dark">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2>Ready to Get Started?</h2>
+                <p class="lead">Scan your first directory in seconds and discover the power of AI-driven file management.</p>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> No installation required</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Works with any directory structure</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Instant visualizations and insights</li>
+                </ul>
+            </div>
+            <div class="col-lg-6">
+                <div class="card quick-scan-card">
+                    <div class="card-body p-4">
+                        <h5 class="card-title mb-3">Quick Scan</h5>
+                        <form id="quick-scan-form" action="/dashboard" method="get">
+                            <div class="mb-3">
+                                <label for="quick-directory-input" class="form-label">Directory Path</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
+                                    <input type="text" class="form-control directory-input" id="quick-directory-input" placeholder="/path/to/directory" required>
+                                </div>
+                                <div class="form-text">Enter the absolute path of the directory you want to analyze</div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-bolt me-2"></i> Start Scan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="infoModalLabel">About AI Directory Manager</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>What is AI Directory Manager?</h5>
+                <p>
+                    AI Directory Manager is an intelligent file and directory management system powered by machine learning. 
+                    It helps you understand and organize your file system by automatically categorizing files, 
+                    extracting metadata, and providing insightful visualizations.
+                </p>
+                
+                <h5>Key Features</h5>
+                <ul>
+                    <li><strong>AI-Powered Categorization:</strong> Automatically categorize files based on content and patterns</li>
+                    <li><strong>Interactive Visualizations:</strong> Understand your directory structure through charts and graphs</li>
+                    <li><strong>Advanced Search:</strong> Find files quickly with powerful filtering capabilities</li>
+                    <li><strong>Metadata Extraction:</strong> View detailed information about your files</li>
+                    <li><strong>Performance Focus:</strong> Efficiently process large directories</li>
+                </ul>
+                
+                <h5>How It Works</h5>
+                <p>
+                    The system uses a combination of pattern recognition, machine learning algorithms, and metadata analysis 
+                    to scan and categorize your files. Our visualization engine then transforms this data into 
+                    interactive charts and graphs to help you understand your file system at a glance.
+                </p>
+                
+                <h5>Privacy & Security</h5>
+                <p>
+                    AI Directory Manager processes all files locally on your system. No file contents are uploaded 
+                    to external servers, ensuring complete privacy and security of your data.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <a href="/dashboard" class="btn btn-primary">Go to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Handle the quick scan form submission
+    document.getElementById('quick-scan-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const directoryPath = document.getElementById('quick-directory-input').value.trim();
+        if (directoryPath) {
+            // Store the directory path in localStorage for use in dashboard
+            localStorage.setItem('quickScanDirectory', directoryPath);
+            window.location.href = '/dashboard';
+        }
+    });
+</script>
+{% endblock %}
