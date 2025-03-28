@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-3">Directory Scanner</h2>
+                    
+                    <!-- Directory Scan Form -->
+                    <form id="scan-form">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-9">
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
+                                    <input type="text" class="form-control directory-input" id="directory-input" placeholder="/path/to/directory" required>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-primary" id="scan-btn">
+                                        <i class="fas fa-search me-2"></i> Scan Directory
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-text mt-2">Enter the absolute path of the directory you want to analyze</div>
+                    </form>
+                    
+                    <!-- Loading Spinner -->
+                    <div id="loading-spinner" class="text-center my-5 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Scanning directory and analyzing files...</p>
+                    </div>
+                    
+                    <!-- Error Alert -->
+                    <div id="error-alert" class="alert alert-danger mt-3 d-none" role="alert"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scan Results Section -->
+    <div id="scan-results" class="d-none">
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="card-title mb-0">Search & Filter</h3>
+                            <button class="btn btn-success" id="visualize-btn" disabled>
+                                <i class="fas fa-chart-bar me-2"></i> Visualize Data
+                            </button>
+                        </div>
+                        
+                        <!-- Search Form -->
+                        <form id="search-form" class="search-form">
+                            <div class="row g-3">
+                                <div class="col-md-8">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="search-input" placeholder="Search files by name or path...">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <select class="form-select" id="category-filter" multiple aria-label="Filter by category">
+                                        <option value="">All Categories</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <!-- Statistics Container -->
+            <div class="col-12 mb-4">
+                <div id="stats-container"></div>
+            </div>
+            
+            <!-- Files List Container -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark">
+                        <h5 class="mb-0">Files</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div id="files-list" class="table-responsive"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Visualization Section -->
+    <div id="visualization-section" class="mt-5 d-none">
+        <h2 class="mb-4">Data Visualizations</h2>
+        
+        <div class="row g-4">
+            <!-- Category Distribution -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="visualization-container">
+                            <canvas id="category-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Size Distribution -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="visualization-container">
+                            <canvas id="size-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Extension Distribution -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="visualization-container">
+                            <canvas id="extension-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Time Distribution -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="visualization-container">
+                            <canvas id="time-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Directory Treemap -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Directory Structure Treemap</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="directory-treemap" class="visualization-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Check if there's a quick scan directory from homepage
+    document.addEventListener('DOMContentLoaded', function() {
+        const quickScanDirectory = localStorage.getItem('quickScanDirectory');
+        if (quickScanDirectory) {
+            // Set the directory input value
+            document.getElementById('directory-input').value = quickScanDirectory;
+            
+            // Clear the localStorage item
+            localStorage.removeItem('quickScanDirectory');
+            
+            // Automatically submit the form
+            document.getElementById('scan-form').dispatchEvent(new Event('submit'));
+        }
+    });
+</script>
+{% endblock %}
