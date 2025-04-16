@@ -47,3 +47,18 @@ class FileMetadata(db.Model):
     
     def __repr__(self):
         return f'<FileMetadata {self.filename}>'
+
+class UploadedFile(db.Model):
+    """Model to store information about uploaded files."""
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(255), nullable=False)
+    original_filename = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.String(1000), nullable=False)
+    extension = db.Column(db.String(20))
+    size_bytes = db.Column(db.BigInteger)
+    upload_date = db.Column(db.DateTime, default=datetime.utcnow)
+    mime_type = db.Column(db.String(100))
+    category = db.Column(db.String(100))
+    
+    def __repr__(self):
+        return f'<UploadedFile {self.filename}>'
