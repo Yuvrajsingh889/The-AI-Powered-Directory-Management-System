@@ -106,6 +106,35 @@ class FileClassifier:
             'config': 'System',
         }
         
+        # Academic categories patterns for content-based classification
+        self.academic_patterns = {
+            'Engineering_Drawing': [
+                'drawing', 'engineering', 'mechanical', 'cad', 'autocad', 'projection', 
+                'dimension', 'blueprint', 'technical drawing', 'schematic', 'isometric',
+                'orthographic', 'assembly', 'drafting', 'design', 'component'
+            ],
+            'Mathematics': [
+                'math', 'equation', 'calculus', 'algebra', 'geometry', 'theorem', 
+                'function', 'statistical', 'statistics', 'probability', 'mathematical',
+                'formula', 'derivative', 'integral', 'matrix', 'vector', 'differential'
+            ],
+            'Physics': [
+                'physics', 'mechanics', 'dynamics', 'kinematics', 'force', 'energy',
+                'thermodynamics', 'electricity', 'magnetism', 'quantum', 'relativity',
+                'fluid dynamics', 'optics', 'wave', 'particle'
+            ],
+            'Chemistry': [
+                'chemistry', 'chemical', 'molecule', 'atom', 'compound', 'reaction',
+                'organic', 'inorganic', 'solution', 'acid', 'base', 'element', 'periodic',
+                'biochemistry', 'polymer'
+            ],
+            'Computer_Science': [
+                'algorithm', 'data structure', 'programming', 'software', 'database',
+                'network', 'artificial intelligence', 'machine learning', 'computer',
+                'operating system', 'security', 'web', 'cloud computing'
+            ]
+        }
+        
         # Initialize ML model for filename-based categorization
         self.vectorizer = TfidfVectorizer(
             analyzer='char_wb',
@@ -182,12 +211,15 @@ class FileClassifier:
                 file_info['category'] = self.extension_categories[ext]
             else:
                 file_info['category'] = 'Other'
-        
+                
+        # Process documents category to identify academic subjects
+        self._identify_academic_documents(files_info)
+                
         # Count files by category
         category_counts = defaultdict(int)
         for file_info in files_info:
             category_counts[file_info['category']] += 1
-        
+                
         # For files in 'Other' category, try ML-based categorization
         uncategorized_files = [
             file_info for file_info in files_info
@@ -216,7 +248,64 @@ class FileClassifier:
         # Apply additional heuristics to refine categorization
         self._apply_categorization_heuristics(files_info)
         
+        # Group similar files better - specifically for academic documents
+        self._group_similar_files(files_info)
+        
         return files_info
+        
+    def _identify_academic_documents(self, files_info):
+        """
+        Identify academic documents by analyzing filenames and paths.
+        
+        Args:
+            files_info (list): List of file information dictionaries
+        """
+        for file_info in files_info:
+            # Only process document files
+            if file_info['category'] not in ['Documents', 'Other']:
+                continue
+                
+            name = file_info['name'].lower()
+            path = file_info['path'].lower()
+            
+            # Check against academic patterns to categorize by subject
+            for subject, keywords in self.academic_patterns.items():
+                for keyword in keywords:
+                    if keyword.lower() in name or keyword.lower() in path:
+                        file_info['category'] = subject
+                        break
+                        
+    def _group_similar_files(self, files_info):
+        """
+        Group similar files together by analyzing patterns in their names and paths.
+        
+        Args:
+            files_info (list): List of file information dictionaries
+        """
+        # Group files with very similar names together
+        # This handles files that are part of the same series or set
+        name_groups = defaultdict(list)
+        
+        # First pass - group by common name prefixes
+        for file_info in files_info:
+            name = file_info['name'].lower()
+            # Remove any numbers and common separators to find base name
+            base_name = re.sub(r'[0-9_\-\.\s]+', '', name)
+            if len(base_name) > 3:  # Only group if base name is meaningful
+                name_groups[base_name].append(file_info)
+        
+        # For each group with multiple files, assign them the same category
+        for base_name, group in name_groups.items():
+            if len(group) >= 2:
+                # For academic files, check if most files in group have the same category
+                categories = [f['category'] for f in group]
+                most_common_category = max(set(categories), key=categories.count)
+                
+                # Only apply if most_common_category is a specific academic category
+                if most_common_category in self.academic_patterns:
+                    # Apply the most common category to all files in this group
+                    for file_info in group:
+                        file_info['category'] = most_common_category
     
     def _apply_categorization_heuristics(self, files_info):
         """
@@ -228,6 +317,53 @@ class FileClassifier:
         for file_info in files_info:
             name = file_info['name'].lower()
             path = file_info['path'].lower()
+            
+            # Academic file classification with higher specificity
+            
+            # Engineering Drawing specific patterns
+            if (file_info['category'] == 'Documents' and 
+                ('drawing' in name or 'projection' in name or 
+                 'mechanical' in name or 'engineering' in name or
+                 'cad' in name or 'technical' in name or
+                 'blueprint' in name or 'schematic' in name or
+                 'orthographic' in name or 'isometric' in name)):
+                file_info['category'] = 'Engineering_Drawing'
+                continue  # Skip further checks once categorized
+            
+            # Mathematics specific patterns
+            if (file_info['category'] == 'Documents' and 
+                ('math' in name or 'calculus' in name or 
+                 'algebra' in name or 'equation' in name or
+                 'geometry' in name or 'theorem' in name or
+                 'formula' in name or 'statistical' in name)):
+                file_info['category'] = 'Mathematics'
+                continue  # Skip further checks once categorized
+                
+            # Physics specific patterns
+            if (file_info['category'] == 'Documents' and 
+                ('physics' in name or 'force' in name or 
+                 'energy' in name or 'mechanics' in name or
+                 'dynamics' in name or 'kinematics' in name)):
+                file_info['category'] = 'Physics'
+                continue  # Skip further checks once categorized
+                
+            # Chemistry specific patterns
+            if (file_info['category'] == 'Documents' and 
+                ('chemistry' in name or 'molecule' in name or 
+                 'chemical' in name or 'compound' in name or
+                 'reaction' in name or 'organic' in name)):
+                file_info['category'] = 'Chemistry'
+                continue  # Skip further checks once categorized
+                
+            # Computer Science specific patterns
+            if (file_info['category'] == 'Documents' and 
+                ('algorithm' in name or 'data structure' in name or 
+                 'programming' in name or 'database' in name or
+                 'software' in name or 'network' in name)):
+                file_info['category'] = 'Computer_Science'
+                continue  # Skip further checks once categorized
+            
+            # General system files classification
             
             # Check for configuration files
             if (name.startswith('config') or 
