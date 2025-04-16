@@ -3,8 +3,11 @@ import stat
 import time
 import logging
 import mimetypes
+import numpy as np
 from datetime import datetime
 import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 class FileScanner:
     """Class for scanning directories and extracting file information."""
@@ -13,6 +16,13 @@ class FileScanner:
         """Initialize the file scanner."""
         logging.debug("FileScanner initialized")
         mimetypes.init()
+        self.vectorizer = TfidfVectorizer(
+            lowercase=True,
+            stop_words='english',
+            ngram_range=(1, 2),  # Include both unigrams and bigrams
+            min_df=1,
+            max_df=0.9
+        )
     
     def scan_directory(self, directory_path):
         """
@@ -161,7 +171,7 @@ class FileScanner:
     
     def search_files(self, files_data, query="", filters=None):
         """
-        Search through files based on query and filters.
+        Search through files based on query and filters using NLP techniques.
         
         Args:
             files_data (list): List of file information dictionaries
@@ -173,18 +183,10 @@ class FileScanner:
         """
         if filters is None:
             filters = {}
-            
-        result = []
         
+        # Apply filters first
+        filtered_files = []
         for file_info in files_data:
-            # Check if file matches search query
-            if query:
-                query_lower = query.lower()
-                name_match = query_lower in file_info['name'].lower()
-                path_match = query_lower in file_info['path'].lower()
-                if not (name_match or path_match):
-                    continue
-            
             # Apply filters
             if 'extensions' in filters and filters['extensions']:
                 if file_info['extension'] not in filters['extensions']:
@@ -210,7 +212,93 @@ class FileScanner:
                 if file_info['modified'] > filters['modified_before']:
                     continue
             
-            # If file passed all filters, add it to results
-            result.append(file_info)
+            # If file passed all filters, add it to filtered list
+            filtered_files.append(file_info)
         
-        return result
+        # If no query, return all filtered files
+        if not query or len(filtered_files) == 0:
+            return filtered_files
+        
+        # Prepare file documents for NLP processing
+        file_documents = []
+        for file_info in filtered_files:
+            # Create a document that includes name, path, and category (if available)
+            doc = file_info['name'] + " " + file_info['path']
+            if file_info['category']:
+                doc += " " + file_info['category']
+                
+            # Include some useful metadata as words
+            if file_info['extension']:
+                doc += " extension:" + file_info['extension']
+                
+            file_documents.append(doc)
+        
+        # If we have a simple keyword query, handle it specially
+        if len(query.split()) == 1:
+            query_lower = query.lower()
+            exact_matches = []
+            partial_matches = []
+            
+            for i, file_info in enumerate(filtered_files):
+                # Check for exact matches in filename
+                if query_lower == file_info['name'].lower():
+                    exact_matches.append(file_info)
+                # Check for filename starts with query
+                elif file_info['name'].lower().startswith(query_lower):
+                    exact_matches.append(file_info)
+                # Check for partial matches in filename or path
+                elif query_lower in file_info['name'].lower() or query_lower in file_info['path'].lower():
+                    partial_matches.append(file_info)
+            
+            # If we have exact matches, prioritize them
+            if exact_matches:
+                return exact_matches + partial_matches
+            elif partial_matches:
+                return partial_matches
+        
+        try:
+            # Use NLP for more complex queries
+            # Fit the vectorizer on documents
+            tfidf_matrix = self.vectorizer.fit_transform(file_documents)
+            
+            # Vectorize the query
+            query_vector = self.vectorizer.transform([query])
+            
+            # Calculate similarity between query and documents
+            similarities = cosine_similarity(query_vector, tfidf_matrix).flatten()
+            
+            # Get indices sorted by similarity score (descending)
+            ranked_indices = np.argsort(-similarities)
+            
+            # Filter results by similarity threshold
+            similarity_threshold = 0.01  # Adjust as needed
+            result = []
+            
+            for idx in ranked_indices:
+                similarity = similarities[idx]
+                if similarity >= similarity_threshold:
+                    result.append(filtered_files[idx])
+            
+            # Fallback to basic search if NLP returns no results
+            if not result and filtered_files:
+                logging.info("NLP search returned no results, falling back to basic search")
+                query_lower = query.lower()
+                for file_info in filtered_files:
+                    if (query_lower in file_info['name'].lower() or 
+                        query_lower in file_info['path'].lower()):
+                        result.append(file_info)
+            
+            return result
+            
+        except Exception as e:
+            logging.error(f"Error in NLP search: {str(e)}. Falling back to basic search.")
+            # Fallback to basic search if NLP fails
+            result = []
+            query_lower = query.lower()
+            
+            for file_info in filtered_files:
+                if (query_lower in file_info['name'].lower() or 
+                    query_lower in file_info['path'].lower()):
+                    result.append(file_info)
+            
+            return result
