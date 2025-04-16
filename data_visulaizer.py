@@ -2,6 +2,7 @@ import os
 import json
 import logging
 from collections import defaultdict, Counter
+from ai_insights import AIInsights
 
 class DirectoryVisualizer:
     """Class for generating directory visualization data."""
@@ -9,6 +10,7 @@ class DirectoryVisualizer:
     def __init__(self):
         """Initialize the directory visualizer."""
         logging.debug("DirectoryVisualizer initialized")
+        self.ai_insights = AIInsights()
     
     def generate_visualization(self, files_data):
         """
@@ -31,12 +33,16 @@ class DirectoryVisualizer:
             directory_tree = self._generate_directory_tree(files_data)
             time_distribution = self._generate_time_distribution(files_data)
             
+            # Generate AI-powered insights
+            ai_insights = self.ai_insights.generate_file_insights(files_data)
+            
             visualization_data = {
                 'category_distribution': category_distribution,
                 'size_distribution': size_distribution,
                 'extension_distribution': extension_distribution,
                 'directory_tree': directory_tree,
-                'time_distribution': time_distribution
+                'time_distribution': time_distribution,
+                'ai_insights': ai_insights
             }
             
             return visualization_data
